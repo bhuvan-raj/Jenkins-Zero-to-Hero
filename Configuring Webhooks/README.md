@@ -1,5 +1,5 @@
 # Webhooks for Github
-<img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/webhook.jpg" alt="Banner" />
+<img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/webhook.png" alt="Banner" />
 
 ## **1. What is a Webhook?**
 
