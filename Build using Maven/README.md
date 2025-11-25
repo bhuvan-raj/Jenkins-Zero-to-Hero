@@ -1,6 +1,9 @@
 
 # **Building in Jenkins Using Maven – Study Notes**
 
+<img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/maven.jpg" alt="Banner" />
+
+
 Maven is a popular **Java build automation tool**. Integrating Maven with Jenkins allows **automated compilation, testing, packaging, and deployment** in CI/CD pipelines.
 
 ---
