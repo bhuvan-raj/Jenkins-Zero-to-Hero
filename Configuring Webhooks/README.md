@@ -1,5 +1,7 @@
+# Webhooks for Github
+<img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/webhook.jpg" alt="Banner" />
 
-# **1. What is a Webhook?**
+## **1. What is a Webhook?**
 
 A **webhook** is a **user-defined HTTP callback** that allows one system to notify another system automatically when a certain event occurs.
 
