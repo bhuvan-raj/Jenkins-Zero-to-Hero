@@ -1,6 +1,8 @@
 
 # **Jenkins Architecture – In-Depth Study Notes**
 <img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/jenkins.png" alt="Banner" />
+
+
 ## **1. Overview of Jenkins**
 
 Jenkins is an open-source automation server primarily used for continuous integration (CI) and continuous delivery (CD). Its architecture is designed to be modular, distributed, and highly extensible, enabling the automation of build, test, and deployment pipelines across numerous environments.
