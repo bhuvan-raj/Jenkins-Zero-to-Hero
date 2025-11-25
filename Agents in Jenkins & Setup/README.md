@@ -33,18 +33,7 @@ At a conceptual level, all Jenkins agents fall under two categories:
 * Useful for **consistent environments** (e.g., testing specific OS, pre-installed tools).
 * Managed via **Manage Jenkins → Nodes**.
 
-### **Steps to Configure a Static Agent**
 
-1. Go to **Manage Jenkins → Manage Nodes and Clouds → New Node**
-2. Enter a **Node name** and select **Permanent Agent**
-3. Configure:
-
-   * **Remote root directory** (workspace location)
-   * **Number of executors**
-   * **Labels** (OS, tool versions, purpose)
-   * **Launch method** (SSH, JNLP, Windows service)
-   * **Retention strategy** (always online, temporarily offline)
-4. Save and connect the agent.
 
 ---
 
