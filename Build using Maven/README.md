@@ -1,4 +1,3 @@
-
 # **Building in Jenkins Using Maven – Study Notes**
 
 <img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/maven.jpg" alt="Banner" />
@@ -8,212 +7,230 @@ Maven is a popular **Java build automation tool**. Integrating Maven with Jenkin
 
 ---
 
-## **1. Prerequisites**
+# **1. Lab Objective**
 
-1. **Jenkins Controller**
+Learners will configure a Jenkins Freestyle project that:
 
-   * Installed and running
-   * Access to Jenkins dashboard
-
-2. **Jenkins Plugins**
-
-   * **Maven Integration Plugin** (mandatory)
-   * Optional: Git plugin (for source control), Pipeline plugin
-
-3. **Java and Maven**
-
-   * Install JDK on Jenkins controller or agent nodes
-   * Install Maven on the system or configure Maven installation in Jenkins
-
-4. **Project**
-
-   * Maven project with `pom.xml`
-   * SCM repository (Git, SVN, etc.)
+* Pulls a Maven project from GitHub
+* Executes a Maven build (`clean package`)
+* Archives generated artifacts
+* Shows build output through Jenkins console
 
 ---
 
-## **2. Jenkins Maven Setup**
+# **2. Prerequisites**
 
-### **Step 1: Configure Maven in Jenkins**
+Before starting the Jenkins configuration:
 
-1. Go to **Manage Jenkins → Global Tool Configuration**
-2. Under **Maven**, click **Add Maven**
-3. Configure:
-
-   * **Name**: e.g., `Maven-3.9`
-   * **Install automatically**: Check (optional, Jenkins downloads Maven automatically)
-   * Or provide **Maven home directory** if installed manually
-4. Save configuration
-
-### **Step 2: Configure JDK**
-
-1. In the same **Global Tool Configuration**, under **JDK**, add:
-
-   * **Name**: `JDK-17`
-   * **JAVA_HOME path** (optional if auto-installed)
-2. Save configuration
+* Jenkins server is running
+* Java is installed on the Jenkins machine
+* Maven is installed or configured through Jenkins
+* Git is installed
+* A valid GitHub repository containing a Maven project
 
 ---
 
-## **3. Creating a Maven Job in Jenkins**
+# **3. Configure Maven in Jenkins**
 
-### **Step 1: Create Job**
+### **Step 1: Open Global Tool Configuration**
 
-1. **New Item → Enter Job Name → Maven Project → OK**
+1. From Jenkins Dashboard → **Manage Jenkins**
+2. Click **Global Tool Configuration**
 
-### **Step 2: Source Code Management**
+### **Step 2: Add Maven**
 
-1. Choose **Git** or **SVN** as SCM
-2. Provide:
+1. Scroll to **Maven** section
+2. Click **Add Maven**
+3. Fill in:
 
-   * Repository URL
-   * Credentials if needed
-   * Branch to build
+   * **Name:** `Maven-3.9`
+   * **Install automatically:** ✓ (checked)
+4. Save settings
 
-### **Step 3: Build Triggers**
+This makes Maven available inside Freestyle jobs.
 
-* Configure automatic build triggers:
+---
 
-  * **Poll SCM**: e.g., `H/5 * * * *` (every 5 minutes)
-  * **GitHub hook trigger**: triggers build on commit
-  * **Cron schedule** for nightly builds
+# **4. Create a Freestyle Project**
 
-### **Step 4: Build Settings**
+### **Step 3: Start a New Job**
 
-1. **Root POM**: Path to `pom.xml` (e.g., `pom.xml` or `module/pom.xml`)
-2. **Goals and options**: Specify Maven goals, e.g.:
+1. From Jenkins Dashboard → **New Item**
+2. Job Name:
 
-   * `clean install` – clean workspace and build project
-   * `package` – compile and package project into JAR/WAR
-   * `test` – run unit tests
-   * `verify` – run integration tests
-3. **Advanced Options** (optional):
+   ```
+   maven-build-job
+   ```
+3. Select **Freestyle project**
+4. Click **OK**
 
-   * Maven options (`-X` for debug)
-   * JVM options (`-DskipTests=true` to skip tests)
-   * Environment variables
+---
 
-### **Step 5: Post-build Actions**
+# **5. Configure Source Code Management (SCM)**
 
-* **Archive artifacts**: Save JAR/WAR or other output
-* **Publish JUnit test results**: `**/target/surefire-reports/*.xml`
-* **Deploy artifacts**: Push to Nexus, Artifactory, or GitHub Packages
-* **Trigger other jobs**: For deployment or downstream steps
+### **Step 4: Connect GitHub Repository**
 
-### **Step 6: Save and Build**
+Inside the project configuration page:
+
+1. Go to **Source Code Management**
+
+2. Select **Git**
+
+3. Enter the repository URL:
+
+   Example:
+
+   ```
+   https://github.com/<username>/<repository>.git
+   ```
+
+4. For private repos → Add credentials
+
+5. Under **Branches to build**, set:
+
+   ```
+   */main
+   ```
+
+   (or the branch your project uses)
+
+This ensures Jenkins retrieves the project files during the build.
+
+---
+
+# **6. Add Maven Build Step**
+
+### **Step 5: Add Build Instruction**
+
+1. Scroll to **Build** section
+2. Click **Add build step** → **Invoke top-level Maven targets**
+
+Configure:
+
+* **Maven Version:**
+  Select `Maven-3.9` (the one added earlier)
+
+* **Goals:**
+
+  ```
+  clean package
+  ```
+
+Explanation:
+
+* `clean` removes previous builds
+* `package` produces the JAR/WAR file
+
+---
+
+# **7. Archive Build Artifacts**
+
+### **Step 6: Add Post-build Action**
+
+1. Scroll to **Post-build Actions**
+2. Click **Add post-build action**
+3. Select **Archive the artifacts**
+4. In the **Files to archive** field, enter:
+
+   ```
+   target/*.jar
+   ```
+
+   or
+
+   ```
+   target/*.war
+   ```
+
+This allows Jenkins to store and display the artifact for download after every successful build.
+
+---
+
+# **8. Build the Job**
+
+### **Step 7: Save and Run**
 
 1. Click **Save**
 2. Click **Build Now**
-3. Check **Console Output** for logs:
 
-   * Maven goals executed
-   * Compilation status
-   * Test results
+This triggers the first execution.
 
 ---
 
-## **4. Using Maven in Jenkins Pipeline**
+# **9. Validate Build Output**
 
-Instead of a freestyle Maven job, you can use **Jenkins Pipeline** with Maven commands.
+### **Step 8: Check Console Output**
 
-### **Declarative Pipeline Example**
+1. Click on the build number (e.g., **#1**)
+2. Click **Console Output**
 
-```groovy
-pipeline {
-    agent any
-    tools {
-        maven 'Maven-3.9' // Maven installation configured in Jenkins
-        jdk 'JDK-17'
-    }
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/example/repo.git'
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'mvn clean install'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
-        stage('Package') {
-            steps {
-                sh 'mvn package'
-            }
-        }
-    }
-}
+Expected behavior:
+
+* Jenkins pulls source code from GitHub
+* Maven downloads dependencies
+* Compilation happens
+* Packaging completes
+* Output ends with:
+
+  ```
+  BUILD SUCCESS
+  ```
+
+### **Step 9: Verify Artifacts**
+
+1. Open the same build page
+2. Scroll to **Artifacts** section
+3. You should see:
+
+   ```
+   your-app-1.0.0.jar
+   ```
+4. You may download it to verify locally.
+
+---
+
+# **10. Troubleshooting (Very Important for Teaching)**
+
+### **Issue 1: Git not installed**
+
+Error:
+
+```
+git: command not found
 ```
 
----
+Fix:
 
-### **Pipeline Notes**
+```bash
+sudo dnf install git
+```
 
-1. `tools` block automatically sets `PATH` to use configured Maven and JDK.
-2. `sh` steps execute Maven commands on the selected agent.
-3. `junit` step publishes test results to Jenkins UI.
-4. Pipeline allows **parallel builds**, **dynamic agents**, and **multi-stage workflows**.
+### **Issue 2: Maven not found**
 
----
+Error:
 
-## **5. Best Practices for Maven Builds in Jenkins**
+```
+No such Maven installation found
+```
 
-| Best Practice                                           | Reason                                                   |
-| ------------------------------------------------------- | -------------------------------------------------------- |
-| Use `clean` goal first                                  | Remove previous artifacts to avoid conflicts             |
-| Archive artifacts                                       | Keep build outputs for future reference                  |
-| Publish test results                                    | Track quality and CI feedback                            |
-| Use environment-specific profiles                       | Handle dev/test/prod builds via Maven profiles           |
-| Use pipeline instead of freestyle for complex workflows | Better scalability, maintainability, and code versioning |
-| Use Jenkins agents for builds                           | Isolate environments and scale horizontally              |
-| Configure Maven options like `-B` (batch mode)          | Avoid interactive prompts in CI                          |
+Fix:
+Reconfigure in *Global Tool Configuration*.
 
----
+### **Issue 3: Build fails because pom.xml missing**
 
-## **6. Integration with Other Tools**
-
-* **Artifact Repositories**: Nexus, Artifactory, GitHub Packages
-
-  * Use Maven `deploy` goal to push artifacts
-* **Testing Frameworks**: JUnit, TestNG, Surefire, Jacoco
-* **Code Quality**: SonarQube, Checkstyle, PMD integration in Maven build
-* **Notifications**: Email, Slack, Teams for build status
+Fix:
+Ensure the GitHub project contains a valid Maven project structure.
 
 ---
 
-## **7. Debugging Maven Builds in Jenkins**
+# **11. Lab Summary**
 
-1. Enable **Debug mode**: `mvn -X clean install`
-2. Check **Console Output** for:
+In this lab, learners:
 
-   * Dependency resolution errors
-   * Compilation errors
-   * Test failures
-3. Use **Build Environment variables**:
+* Integrated Jenkins with GitHub
+* Configured Maven inside Jenkins
+* Created a Freestyle job
+* Ran Maven build (`clean package`)
+* Archived build outputs
+* Verified successful build execution
 
-   * `WORKSPACE` – path of Jenkins workspace
-   * `BUILD_NUMBER` – Jenkins build number
-   * `JOB_NAME` – Jenkins job name
-
----
-
-## **8. Summary**
-
-* Maven builds in Jenkins can be managed using **Freestyle Maven Jobs** or **Pipelines**.
-* Configure **Maven installation** and **JDK** in Jenkins.
-* Key goals: `clean`, `install`, `package`, `test`, `deploy`.
-* Integrate with **SCM, test reporting, artifact repositories**.
-* Pipelines offer **better maintainability**, **parallel builds**, and **dynamic agents**.
-* Secure credentials for repository access using Jenkins **Credentials Plugin**.
-
----
