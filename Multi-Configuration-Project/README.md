@@ -286,7 +286,7 @@ A **Multi-Configuration Project** is a powerful Jenkins feature that allows syst
 
 Create a Git repo (public or private). Minimal files:
 
-```
+
 /multi-registry-demo
   ├─ Dockerfile
 
