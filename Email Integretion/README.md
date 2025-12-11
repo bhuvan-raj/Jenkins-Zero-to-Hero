@@ -18,8 +18,6 @@
 
 1. Jenkins installed and running.
 2. Gmail account with **App Password** enabled (2FA must be on).
-
-   * Generate App Password: [Google App Password Guide](https://support.google.com/accounts/answer/185833)
 3. Email Extension plugin (`email-ext`) installed in Jenkins.
 4. Basic understanding of Freestyle and Pipeline jobs.
 
@@ -28,25 +26,38 @@
 ## **Step 1: Configure SMTP in Jenkins**
 
 1. Go to **Jenkins Dashboard → Manage Jenkins → Configure System**
+   
 2. Scroll to **Extended E-mail Notification** (or Email Notification).
-3. Configure as follows:
+   
+3. **Generate App Password:** Go to your Google Account - Security & Sign-in - 2 Step Verification - App Passwords - create - Give a App Name - create - copy the code
+   
+5. Configure as follows:
 
-| Field               | Value                             |
-| ------------------- | --------------------------------- |
-| SMTP server         | `smtp.gmail.com`                  |
-| Default user e-mail | `yourmail@gmail.com`              |
-| Use SSL             | ❌ (leave unchecked, use STARTTLS) |
-| Use TLS             | ✅                                 |
-| SMTP Port           | `587`                             |
-| SMTP Authentication | ✅ Enable                          |
-| Username            | `yourmail@gmail.com`              |
-| Password            | `your_app_password_here`          |
-| Reply-To Address    | Optional                          |
-| Charset             | `UTF-8`                           |
+   **Manage Jenkins - System Confirmation - System - Extended Email Notification**
 
+- **SMTP server** - smtp.gmail.com
+- **SMTP Port** - 587
+- Advanced - Credentials - Add -Jenkins - Username with Password - username (your gmail) - password (App Password) - Add
+- Credentials - your created gmail credential
+- Use TLS
+- In Advanced Email Properties
+```
+  mail.smtp.auth=true
+  mail.smtp.starttls.enable=true
+```
+- Default user e-mail suffix - @gmail.com
+- Maximum Attachment Size - 50
+
+**E-mail Notification**
+- SMTP server - smtp.gmail.com
+- Default user e-mail suffix - @gmail.com
+- Advanced - Use SMTP Authentication - provide username (your gmail) and Password (paste your App password)
+- Use TLS
+- SMTP Port - 587
+  
 4. Click **Test configuration by sending test email**.
 
-   * Enter **recipient**: `yourmail@gmail.com`
+   * Enter **recipient**: `your another mail@gmail.com`
    * Click **Test**
    * Verify that you receive an email.
 
