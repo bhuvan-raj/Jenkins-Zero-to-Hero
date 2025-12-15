@@ -41,7 +41,7 @@ Developer → Git Repository → Jenkins → SonarQube
 docker run -d \
   --name sonarqube \
   -p 9000:9000 \
-  sonarqube:lts
+  sonarqube
 ```
 
 ### 1.2 Verify SonarQube Access
