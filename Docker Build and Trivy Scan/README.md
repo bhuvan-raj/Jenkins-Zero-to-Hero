@@ -145,14 +145,6 @@ pipeline {
             }
         }
 
-        stage('Docker Cleanup') {
-            steps {
-                sh '''
-                docker system prune -af
-                '''
-            }
-        }
-
         stage('Trivy Image Scan') {
             steps {
                 sh '''
