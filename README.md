@@ -46,14 +46,29 @@ By the end of this course, you'll be able to:
 
 | # | Topic | Description |
 |---|-------|-------------|
-| 01 | [Introduction to CI/CD](./Introduction-to-CICD/) | Core concepts of Continuous Integration & Continuous Deployment 
+| 01 | [Introduction to CI/CD](./Introduction-to-CICD/) | Core concepts of Continuous Integration & Continuous Deployment |
 | 02 | [Build-in-CI](./Build-in-CI/) | Running builds as part of a full CI workflow |
 | 03 | [Tests in CI](./Tests-in-CI/) | Integrating unit and integration tests in pipelines |
 | 04 | [Introduction to Jenkins Architecture](./Introduction%20to%20JENKINS-%20Architecture/) | How Jenkins works under the hood — master, agents, executors |
 | 05 | [Agents in Jenkins & Setup](./Agents%20in%20Jenkins%20%26%20Setup/) | Configuring Jenkins agents and distributed builds |
 | 06 | [Job Types in Jenkins](./Job%20types%20in%20Jenkins/) | Freestyle, Pipeline, Multi-branch and more |
-| 07 | [Jenkins Freestyle Project](./Freestyle-Project/) | Creating freestyle pipeline |
+| 07 | [Jenkins Freestyle Project](./Freestyle-Project/) | Creating and configuring freestyle jobs |
 | 08 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
+
+---
+
+> ### 🟠 Before continuing — Learn Apache Maven First!
+>
+> The upcoming modules (09 and 11) involve building and deploying Java applications using **Apache Maven**. If you are new to Maven or need a refresher on concepts like the POM, lifecycle phases, dependencies, and plugins, it is strongly recommended that you visit the dedicated Maven repository before proceeding.
+>
+> 📦 **[Apache-Maven-Zero-to-Hero →](https://github.com/your-username/Apache-Maven-Zero-to-Hero)**
+>
+> This repo covers everything you need — from Maven installation and project structure to build lifecycles and artifact management — so you can follow the Jenkins Maven modules with full confidence.
+
+---
+
+| # | Topic | Description |
+|---|-------|-------------|
 | 09 | [Build using Maven](./Build%20using%20Maven/) | Compiling and packaging Java apps with Maven |
 | 10 | [Configuring Webhooks](./Configuring%20Webhooks/) | Auto-triggering Jenkins jobs via GitHub Webhooks |
 | 11 | [Build and Deploy using Maven - Pipeline](./Build%20and%20Deploy%20using%20maven-%20Pipeline/) | End-to-end Maven build and deploy pipeline |
