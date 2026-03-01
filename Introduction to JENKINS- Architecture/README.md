@@ -1,310 +1,422 @@
-
-# **Jenkins Architecture – In-Depth Study Notes**
 <img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/jenkins.png" alt="Banner" />
 
 
-## **1. Overview of Jenkins**
+<div align="center">
 
-Jenkins is an open-source automation server primarily used for continuous integration (CI) and continuous delivery (CD). Its architecture is designed to be modular, distributed, and highly extensible, enabling the automation of build, test, and deployment pipelines across numerous environments.
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+![Distributed](https://img.shields.io/badge/Distributed-Builds-blue?style=for-the-badge)
+![Plugins](https://img.shields.io/badge/Plugins-1800%2B-brightgreen?style=for-the-badge)
+![Open Source](https://img.shields.io/badge/Open%20Source-❤️-red?style=for-the-badge)
+
+> **The brain, the agents, and everything in between.**
+
+</div>
 
 ---
 
-# **2. High-Level Architecture**
+## 📋 Table of Contents
 
-At a broad level, Jenkins architecture consists of:
+- [Overview](#-overview)
+- [High-Level Architecture](#-high-level-architecture)
+  - [Jenkins Controller (Master)](#-jenkins-controller-master)
+  - [Jenkins Agent (Node)](#-jenkins-agent-node)
+- [Internal Components](#-jenkins-internal-components)
+  - [Controller Components](#-controller-components)
+  - [Executors — Core Concept](#-executors--core-concept)
+  - [Agent & Node Components](#-agent--node-components)
+- [Plugins](#-plugins--the-heart-of-jenkins)
+- [Build Pipeline Architecture](#-build-pipeline-architecture)
+- [Distributed Build Architecture](#-distributed-build-architecture)
+- [Storage Architecture](#-storage-architecture)
+- [Security Architecture](#-security-architecture)
+- [Lifecycle of a Jenkins Build](#-lifecycle-of-a-jenkins-build)
+- [Quick Summary](#-quick-summary)
 
-### **2.1 Jenkins Master (Controller)**
+---
 
-This is the central brain of Jenkins. It manages:
+## 🔍 Overview
 
-* The UI and REST API
-* Job configuration and orchestration
-* Queue management
-* Dispatching build tasks to agents
-* Plugin management
-* Storing build logs, job history, credentials, and global configurations
+Jenkins is an **open-source automation server** primarily used for Continuous Integration (CI) and Continuous Delivery (CD). Its architecture is designed to be:
 
-In recent terminology, “Master” has been renamed to **Controller**.
+- **Modular** — built around a powerful plugin system
+- **Distributed** — scales horizontally using controller-agent architecture
+- **Extensible** — 1,800+ plugins to integrate with virtually any tool
 
-### **2.2 Jenkins Agent (Node)**
+Jenkins automates the **build, test, and deployment** of applications across diverse environments.
 
-A Jenkins agent is a machine—physical, VM, Docker container, or Kubernetes pod—that performs the actual job execution.
+---
+
+## 🏗️ High-Level Architecture
+
+```
+                        ┌─────────────────────────────┐
+                        │      JENKINS CONTROLLER      │
+                        │  ┌────────┐  ┌───────────┐  │
+         Developers ───▶│  │ Web UI │  │ REST API  │  │
+         (Git Push)     │  └────────┘  └───────────┘  │
+                        │  ┌──────────────────────┐   │
+         Webhooks  ───▶ │  │    Build Queue       │   │
+                        │  └──────────────────────┘   │
+                        │  ┌──────────────────────┐   │
+                        │  │   Job Orchestration  │   │
+                        │  └──────────────────────┘   │
+                        └──────────┬──────────────────┘
+                                   │
+                    Dispatches builds to agents
+                                   │
+           ┌───────────────────────┼───────────────────────┐
+           │                       │                       │
+  ┌────────▼────────┐   ┌──────────▼────────┐   ┌─────────▼────────┐
+  │   AGENT (Linux) │   │  AGENT (Windows)  │   │  AGENT (Docker)  │
+  │  Executor 1 ✅  │   │  Executor 1 ✅    │   │  Executor 1 ✅   │
+  │  Executor 2 🔄  │   │  Executor 2 🔄    │   │  Executor 2 ⏳   │
+  └─────────────────┘   └───────────────────┘   └──────────────────┘
+```
+
+---
+
+### 🧠 Jenkins Controller (Master)
+
+The **Controller** is the central brain of Jenkins. It is responsible for:
+
+| Responsibility | Details |
+|----------------|---------|
+| 🖥️ Web UI & REST API | Serves dashboards, logs, real-time console output |
+| ⚙️ Job Configuration | Stores and manages all job/pipeline definitions |
+| 📋 Queue Management | Holds pending builds until an executor is available |
+| 🚦 Build Dispatching | Assigns jobs to appropriate agents based on labels |
+| 🔌 Plugin Management | Installs, updates, and manages plugins |
+| 🔐 Credentials Store | Securely stores SSH keys, tokens, secrets |
+| 📁 Log & History Storage | Retains build history and output logs |
+
+> ℹ️ In modern Jenkins, "Master" has been officially renamed to **Controller**.
+
+---
+
+### 🤖 Jenkins Agent (Node)
+
+A Jenkins **Agent** is any machine — physical server, VM, Docker container, or Kubernetes pod — that **executes the actual build jobs**.
+
 Agents are used to:
+- Offload workloads from the controller
+- Scale horizontally across many machines
+- Run platform-specific builds (Linux / Windows / macOS)
+- Run multiple jobs in parallel
 
-* Offload workloads
-* Scale horizontally
-* Run platform-specific builds (Linux/Windows/Mac)
-* Run parallel jobs
+**Agent Communication Protocols:**
 
-Agents communicate with the controller via:
-
-* SSH
-* JNLP/WebSockets
-* Docker plugins
-* Kubernetes agent plugins
-
----
-
-# **3. Jenkins Internal Components (Detailed Breakdown)**
-
-## **3.1 Jenkins Controller Components**
-
-### **3.1.1 Web UI & CLI Layer**
-
-* Provides dashboards, job views, logs, and real-time console outputs.
-* Jenkins CLI allows admin operations (create jobs, trigger builds, manage nodes) via commands.
-
-### **3.1.2 Job/Project Configurations**
-
-Stored as XML files in the Jenkins home directory. Types include:
-
-* Freestyle jobs
-* Pipeline jobs (Declarative & Scripted)
-* Multibranch pipelines
-* GitHub Organization jobs
-
-### **3.1.3 Build Queue**
-
-When a build is triggered, it enters the **queue**.
-The controller checks:
-
-* Whether agents have available executors
-* Node labels
-* Resource availability
-* Job restrictions
-
-Only after these conditions are satisfied, the controller assigns the job to an executor.
-
-### **3.1.4 Executors (Core Concept)**
-
-An **executor** is a slot in which Jenkins runs a build.
-Executors belong either to:
-
-* The controller (default: 2 executors)
-* A connected agent (you configure how many executors an agent can run)
-
-#### **How Executors Work**
-
-* A build can start only if an executor is free.
-* More executors mean more parallel builds.
-* Each executor runs **one job at a time**.
-* Executors consume CPU/RAM of the underlying machine.
-
-#### **Why Executors Matter**
-
-Executors determine:
-
-* System capacity
-* Job throughput
-* Parallelism level
-* How distributed builds are handled
-
-#### **Best Practices**
-
-* Set controller executors = 0 (controller should not execute builds; only orchestrate)
-* Size agent executors based on CPU/RAM
-* Avoid over-allocating executors to prevent resource exhaustion
+| Protocol | Use Case |
+|----------|----------|
+| SSH | Standard Linux/Unix agents |
+| JNLP / WebSocket | Cloud, Windows, firewalled environments |
+| Docker Plugin | Temporary containerized agents |
+| Kubernetes Plugin | Dynamic, scalable pod-based agents |
 
 ---
 
-## **3.2 Agents and Node Components**
+## 🔧 Jenkins Internal Components
 
-### **3.2.1 Node Labels**
+### 🖥️ Controller Components
 
-Labels help target specific agents. Examples:
+#### Web UI & CLI Layer
+The controller exposes a **web dashboard** showing job views, build logs, and real-time console output. The **Jenkins CLI** allows admins to perform operations (create jobs, trigger builds, manage nodes) via command line.
 
-* `linux`
-* `docker`
-* `java17`
-* `gpu`
+#### Job / Project Configurations
+All job configurations are stored as **XML files** in the Jenkins home directory.
 
-Jobs can specify label requirements to run on appropriate nodes.
+```
+JENKINS_HOME/
+├── jobs/
+│   ├── my-pipeline/
+│   │   └── config.xml
+│   └── deploy-job/
+│       └── config.xml
+├── plugins/
+├── credentials.xml
+└── config.xml
+```
 
-### **3.2.2 Agent Launch Mechanisms**
+Supported job types: Freestyle, Declarative Pipeline, Scripted Pipeline, Multibranch Pipeline, GitHub Organization.
 
-Different approaches used depending on environment:
+#### Build Queue
+When a build is triggered, it enters the **queue**. The controller evaluates:
+- Whether agents have available executors
+- Node label requirements
+- Resource availability and job restrictions
 
-* **SSH agents** – common for Linux servers
-* **JNLP agents** – useful for cloud, Windows, firewalled environments
-* **Docker slaves plugin** – temporary agents via Docker
-* **Kubernetes plugin** – dynamic pod-based agents (most scalable)
-
-### **3.2.3 Workspace**
-
-Each build gets its own **workspace** directory on the agent:
-
-* Contains source code checkout
-* Build artifacts
-* Temporary files
-
-After the build, workspace may be cleaned or archived depending on configuration.
-
-### **3.2.4 Tools Configuration**
-
-Jenkins manages:
-
-* JDK versions
-* Maven, Gradle, Python, NodeJS
-* Custom tool installations
-
-Agents use these tools during build execution.
+Only when all conditions are satisfied is the job dispatched to an agent.
 
 ---
 
-# **4. Plugins – The Heart of Jenkins Architecture**
+### ⚡ Executors — Core Concept
 
-Plugins extend Jenkins functionality. Jenkins has over 1,800 plugins.
+An **executor** is a slot in which Jenkins runs a single build at a time.
 
-### **4.1 Types of Critical Plugins**
+```
+  AGENT NODE (4 Executors)
+  ┌──────────────────────────────────┐
+  │  Executor 1 │ Running: job-A ✅  │
+  │  Executor 2 │ Running: job-B ✅  │
+  │  Executor 3 │ Running: job-C ✅  │
+  │  Executor 4 │ IDLE ⏳            │
+  └──────────────────────────────────┘
+```
 
-* **SCM Plugins:** Git, GitHub, Bitbucket
-* **Build Tools:** Maven, Gradle, Docker
-* **Credentials & Secrets:** Credentials Binding plugin
-* **User & Access Control:** LDAP, SSO, Matrix Authorization
-* **Cloud & Agent Management:** Kubernetes, EC2, Docker agents
-* **Visualization:** Blue Ocean, Pipeline Steps, Job views
+- Each executor runs **one job at a time**
+- More executors = more **parallel builds**
+- Executors consume the **CPU and RAM** of the host machine
 
-### **4.2 Plugin Dependency Architecture**
+**Executor Ownership:**
 
-Plugins rely on one another, creating dependency trees.
-The Jenkins controller checks:
+| Location | Default Executors |
+|----------|------------------|
+| Controller | 2 (should be set to 0 in production) |
+| Agent | Configurable based on machine resources |
 
-* Compatibility
-* Required dependencies
-* Update levels
+**Best Practices:**
 
-A broken plugin can affect the entire system.
-
----
-
-# **5. Build Pipeline Architecture**
-
-### **5.1 Pipeline (Jenkinsfile)**
-
-Pipeline as code is executed through:
-
-* **Declarative Pipeline** (structured, recommended)
-* **Scripted Pipeline** (Groovy-based, more flexible)
-
-Pipelines run inside executors on agents.
-
-### **5.2 Stages & Steps**
-
-* **Stages:** Logical blocks (Build, Test, Deploy)
-* **Steps:** Actual commands executed
-
-Pipeline architecture supports:
-
-* Parallel stages
-* Conditional flows
-* Shared libraries
+> ✅ Set controller executors to **0** — the controller should only orchestrate, never execute builds.  
+> ✅ Size agent executors based on available **CPU and RAM**.  
+> ❌ Avoid over-allocating executors — this causes resource exhaustion and build failures.
 
 ---
 
-# **6. Distributed Build Architecture**
+### 🖧 Agent & Node Components
 
-## **6.1 When to Use Distributed Builds**
+#### Node Labels
+Labels allow you to target specific agents for specific jobs.
 
-* Heavy builds
-* Multi-platform testing
-* Isolation requirements
-* Large engineering teams
+```groovy
+pipeline {
+    agent { label 'linux && docker' }
+    ...
+}
+```
 
-### **6.2 Controller-Agent Communication**
+Common label examples: `linux`, `windows`, `docker`, `java17`, `gpu`, `high-memory`
 
-Uses different protocols:
+#### Workspace
+Each build gets its own **workspace directory** on the agent:
 
-1. **HTTP/HTTPS** – UI, plugins
-2. **SSH/JNLP/WebSocket** – agent connection
-3. **File I/O** – storing logs, artifacts
+```
+/var/jenkins/workspace/my-pipeline/
+├── src/
+├── target/
+├── Jenkinsfile
+└── pom.xml
+```
 
-### **6.3 Scalability**
+The workspace contains the source code checkout, build artifacts, and temporary files. It can be cleaned up after builds based on configuration.
 
-Jenkins scales horizontally by adding more agents or dynamically provisioning them via cloud integrations.
-
----
-
-# **7. Jenkins Storage Architecture**
-
-### **7.1 Jenkins Home Directory**
-
-Includes:
-
-* Job configurations (XML)
-* Build logs
-* Plugin data
-* Credentials store
-* System configurations
-
-### **7.2 Artifacts Storage**
-
-Artifacts can be:
-
-* Stored locally
-* Pushed to artifact repositories (Nexus, Artifactory, GitHub Packages)
-
-### **7.3 Log Storage**
-
-Stored under each job’s directory.
-Plugins can ship logs externally (e.g., CloudWatch, ElasticSearch).
+#### Tools Configuration
+Jenkins manages tool versions per agent, including JDK, Maven, Gradle, NodeJS, and Python. These are configured globally and used during build execution.
 
 ---
 
-# **8. Security Architecture**
+## 🔌 Plugins — The Heart of Jenkins
 
-### **8.1 Authentication**
+Jenkins has **1,800+ plugins** that extend almost every aspect of its functionality.
 
-Methods:
+```
+  Jenkins Core
+       │
+       ├── SCM Plugins ──────── Git, GitHub, Bitbucket, GitLab
+       ├── Build Tools ──────── Maven, Gradle, Docker, NodeJS
+       ├── Credentials ──────── Credentials Binding, HashiCorp Vault
+       ├── Auth & Access ────── LDAP, SSO, Matrix Authorization, RBAC
+       ├── Cloud & Agents ───── Kubernetes, EC2, Docker agents
+       └── Visualization ────── Blue Ocean, Pipeline Graph View
+```
 
-* Jenkins internal users
-* LDAP/Active Directory
-* SSO (SAML/OIDC)
-* GitHub OAuth
-
-### **8.2 Authorization**
-
-Access models:
-
-* Full access
-* Project-based matrix
-* Role-based access control (via plugins)
-
-### **8.3 Credentials Store**
-
-Sensitive data encrypted with master key:
-
-* SSH keys
-* AWS keys
-* Tokens
-* Secrets
-
-Accessed in pipelines through credentials binding.
+> ⚠️ Plugins rely on one another and form **dependency trees**. A broken or incompatible plugin can affect the entire Jenkins instance — always test plugin updates in a non-production environment first.
 
 ---
 
-# **9. Lifecycle of a Jenkins Build**
+## 🔄 Build Pipeline Architecture
 
-1. User commits code → SCM webhook triggers Jenkins
-2. Build enters **queue**
-3. Controller checks available executors
-4. A matching agent with a free executor is selected
-5. Workspace is prepared
-6. Build/pipeline steps are executed
-7. Logs streamed to UI
-8. Artifacts archived
-9. Post-build actions executed (email, deploy, notify)
-10. Executor becomes free for next job
+### Jenkinsfile (Pipeline as Code)
+
+Pipelines are defined in a **Jenkinsfile** committed to the repository alongside application code.
+
+```groovy
+pipeline {
+    agent { label 'linux' }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh './deploy.sh'
+            }
+        }
+    }
+}
+```
+
+| Pipeline Type | Description |
+|---------------|-------------|
+| **Declarative** | Structured, opinionated syntax — recommended for most use cases |
+| **Scripted** | Full Groovy flexibility — for complex, dynamic pipelines |
+
+Pipelines support **parallel stages**, **conditional flows**, and **shared libraries**.
 
 ---
 
-# **10. Quick Summary for Exams or Teaching**
+## 🌐 Distributed Build Architecture
 
-✔ **Controller:** Orchestrates jobs, stores configs, manages queue
-✔ **Agents:** Execute builds
-✔ **Executors:** Run one job at a time; determine parallelism
-✔ **Plugins:** Extend Jenkins functionality
-✔ **Pipeline:** Automates CI/CD via Jenkinsfile
-✔ **Distributed Architecture:** Multiple agents for scalability
-✔ **Security:** Authentication, authorization, credential management
+### When to Use Distributed Builds
+
+- Heavy or long-running builds
+- Multi-platform testing (Linux + Windows + macOS)
+- Build isolation requirements
+- Large teams with many concurrent jobs
+
+### Controller–Agent Communication
+
+```
+  Controller                           Agent
+     │                                   │
+     │── SSH / JNLP / WebSocket ────────▶│
+     │── Job instructions ───────────────▶│
+     │◀─ Build logs & status ────────────│
+     │◀─ Artifacts ──────────────────────│
+```
+
+### Scalability
+
+Jenkins scales **horizontally** by:
+- Adding static agent nodes
+- Dynamically provisioning agents via **Kubernetes**, **AWS EC2**, or **Docker** plugins — agents spin up when needed and tear down after the job completes
 
 ---
+
+## 💾 Storage Architecture
+
+```
+JENKINS_HOME/
+├── jobs/                  # Job configs, build history, logs
+│   └── <job-name>/
+│       ├── config.xml
+│       └── builds/
+│           └── 42/
+│               ├── log
+│               └── archive/
+├── plugins/               # Installed plugin JARs and data
+├── credentials.xml        # Encrypted credentials store
+├── nodes/                 # Agent node configurations
+└── config.xml             # Global Jenkins configuration
+```
+
+**Artifact Storage Options:**
+
+| Option | Use Case |
+|--------|----------|
+| Local disk | Simple setups, small teams |
+| Nexus / Artifactory | Enterprise artifact management |
+| GitHub Packages | GitHub-integrated projects |
+| S3 / Cloud storage | Scalable cloud environments |
+
+Logs can be shipped externally to **CloudWatch**, **Elasticsearch**, or **Splunk** via plugins.
+
+---
+
+## 🔐 Security Architecture
+
+### Authentication
+
+| Method | Description |
+|--------|-------------|
+| Jenkins Internal Users | Default username/password database |
+| LDAP / Active Directory | Enterprise directory integration |
+| SSO (SAML / OIDC) | Single sign-on via identity providers |
+| GitHub OAuth | Login with GitHub account |
+
+### Authorization
+
+| Model | Description |
+|-------|-------------|
+| Full Access | All users have full control (not recommended for production) |
+| Project-Based Matrix | Fine-grained per-project permissions |
+| Role-Based Access Control | Assign roles to users/groups via RBAC plugin |
+
+### Credentials Store
+
+Sensitive data is **encrypted with a master key** and stored in Jenkins. Accessed in pipelines via the credentials binding plugin.
+
+```groovy
+withCredentials([usernamePassword(
+    credentialsId: 'docker-hub',
+    usernameVariable: 'USER',
+    passwordVariable: 'PASS'
+)]) {
+    sh 'docker login -u $USER -p $PASS'
+}
+```
+
+Supported credential types: SSH keys, AWS keys, API tokens, secret text, certificates.
+
+---
+
+## 🔁 Lifecycle of a Jenkins Build
+
+```
+  1. Developer commits code
+          │
+          ▼
+  2. SCM Webhook triggers Jenkins
+          │
+          ▼
+  3. Build enters the Queue
+          │
+          ▼
+  4. Controller finds a matching agent + free executor
+          │
+          ▼
+  5. Workspace is prepared on the agent
+          │
+          ▼
+  6. Pipeline stages & steps execute
+          │
+          ▼
+  7. Logs stream to UI in real-time
+          │
+          ▼
+  8. Artifacts archived
+          │
+          ▼
+  9. Post-build actions run (email, Slack, deploy, notify)
+          │
+          ▼
+  10. Executor freed → ready for next job
+```
+
+---
+
+## 📌 Quick Summary
+
+| Component | Role |
+|-----------|------|
+| **Controller** | Orchestrates jobs, stores configs, manages the build queue |
+| **Agent** | Executes builds on dedicated machines |
+| **Executor** | A slot that runs one job at a time; determines parallelism |
+| **Plugins** | Extend Jenkins functionality — 1,800+ available |
+| **Pipeline / Jenkinsfile** | Defines CI/CD automation as code |
+| **Distributed Architecture** | Multiple agents enable horizontal scaling |
+| **Security** | Authentication + Authorization + Encrypted credential store |
+
+---
+
+<div align="center">
+
+*Part of the [Jenkins Zero to Hero](../README.md) course*
+
+</div>
