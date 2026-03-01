@@ -62,7 +62,6 @@ By the end of this course, you'll be able to:
 | 14 | [Docker Build and Trivy Scan](./Docker%20Build%20and%20Trivy%20Scan/) | Scanning Docker images for vulnerabilities with Trivy |
 | 15 | [Docker Build Pipeline](./Docker-Build-Pipeline/) | Full Docker pipeline from code to container |
 | 16 | [Integration with SonarQube](./Integration%20with%20SonarQube/) | Static code analysis and quality gates |
-
 | 17 | [Email Integration](./Email%20Integretion/) | Sending build notifications via email |
 | 18 | [Multi-Branch Pipeline](./Multi-Branch%20Pipeline/) | Managing pipelines across multiple Git branches |
 | 19 | [Multi-Configuration Project](./Multi-Configuration-Project/) | Running builds across multiple environments/configurations |
