@@ -61,7 +61,7 @@ By the end of this course, you'll be able to:
 >
 > The upcoming modules (09 and 11) involve building and deploying Java applications using **Apache Maven**. If you are new to Maven or need a refresher on concepts like the POM, lifecycle phases, dependencies, and plugins, it is strongly recommended that you visit the dedicated Maven repository before proceeding.
 >
-> 📦 **[Apache-Maven-Zero-to-Hero →](https://github.com/your-username/Apache-Maven-Zero-to-Hero)**
+> 📦 **[Apache-Maven-Zero-to-Hero →](https://github.com/bhuvan-raj/Apache-Maven-Zero-to-Hero)**
 >
 > This repo covers everything you need — from Maven installation and project structure to build lifecycles and artifact management — so you can follow the Jenkins Maven modules with full confidence.
 
