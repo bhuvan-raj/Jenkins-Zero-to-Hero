@@ -52,18 +52,20 @@ By the end of this course, you'll be able to:
 | 04 | [Introduction to Jenkins Architecture](./Introduction%20to%20JENKINS-%20Architecture/) | How Jenkins works under the hood — master, agents, executors |
 | 05 | [Agents in Jenkins & Setup](./Agents%20in%20Jenkins%20%26%20Setup/) | Configuring Jenkins agents and distributed builds |
 | 06 | [Job Types in Jenkins](./Job%20types%20in%20Jenkins/) | Freestyle, Pipeline, Multi-branch and more |
-| 05 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
-| 06 | [Build using Maven](./Build%20using%20Maven/) | Compiling and packaging Java apps with Maven |
-| 07 | [Build and Deploy using Maven - Pipeline](./Build%20and%20Deploy%20using%20maven-%20Pipeline/) | End-to-end Maven build and deploy pipeline |
-| 10 | [Build and Deploy to EC2](./Build%20and%20deploy%20to%20Ec2/) | Deploying your application directly to AWS EC2 |
-| 11 | [Docker Build and Push](./Docker%20Build%20and%20Push/) | Building Docker images and pushing to a registry |
-| 12 | [Docker Build and Trivy Scan](./Docker%20Build%20and%20Trivy%20Scan/) | Scanning Docker images for vulnerabilities with Trivy |
-| 13 | [Docker Build Pipeline](./Docker-Build-Pipeline/) | Full Docker pipeline from code to container |
-| 14 | [Integration with SonarQube](./Integration%20with%20SonarQube/) | Static code analysis and quality gates |
-| 15 | [Configuring Webhooks](./Configuring%20Webhooks/) | Auto-triggering Jenkins jobs via GitHub Webhooks |
-| 16 | [Email Integration](./Email%20Integretion/) | Sending build notifications via email |
-| 17 | [Multi-Branch Pipeline](./Multi-Branch%20Pipeline/) | Managing pipelines across multiple Git branches |
-| 18 | [Multi-Configuration Project](./Multi-Configuration-Project/) | Running builds across multiple environments/configurations |
+| 07 | [Jenkins Freestyle Project](./Freestyle-Project/) | Creating freestyle pipeline |
+| 08 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
+| 09 | [Build using Maven](./Build%20using%20Maven/) | Compiling and packaging Java apps with Maven |
+| 10 | [Configuring Webhooks](./Configuring%20Webhooks/) | Auto-triggering Jenkins jobs via GitHub Webhooks |
+| 11 | [Build and Deploy using Maven - Pipeline](./Build%20and%20Deploy%20using%20maven-%20Pipeline/) | End-to-end Maven build and deploy pipeline |
+| 12 | [Build and Deploy to EC2](./Build%20and%20deploy%20to%20Ec2/) | Deploying your application directly to AWS EC2 |
+| 13 | [Docker Build and Push](./Docker%20Build%20and%20Push/) | Building Docker images and pushing to a registry |
+| 14 | [Docker Build and Trivy Scan](./Docker%20Build%20and%20Trivy%20Scan/) | Scanning Docker images for vulnerabilities with Trivy |
+| 15 | [Docker Build Pipeline](./Docker-Build-Pipeline/) | Full Docker pipeline from code to container |
+| 16 | [Integration with SonarQube](./Integration%20with%20SonarQube/) | Static code analysis and quality gates |
+
+| 17 | [Email Integration](./Email%20Integretion/) | Sending build notifications via email |
+| 18 | [Multi-Branch Pipeline](./Multi-Branch%20Pipeline/) | Managing pipelines across multiple Git branches |
+| 19 | [Multi-Configuration Project](./Multi-Configuration-Project/) | Running builds across multiple environments/configurations |
 
 ---
 
