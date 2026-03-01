@@ -1,244 +1,283 @@
+<img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/jenkins.png" alt="Banner" />
 
-# **Jenkins Job Types – In-Depth Guide**
+<div align="center">
 
-Jenkins supports multiple types of jobs (projects), each suited for different automation scenarios. A **job** is basically a task or pipeline Jenkins executes—like building code, running tests, or deploying an application.
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+![Pipeline](https://img.shields.io/badge/Pipeline-as%20Code-blue?style=for-the-badge)
+![Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+
+# Jenkins Job Types
+
+> **Every job type explained — when to use it, how to set it up, and what it looks like in practice.**
+
+</div>
 
 ---
 
-# **1. Freestyle Project**
+## 📋 Table of Contents
 
-The Freestyle project is the most basic and flexible Jenkins job type.
+- [What is a Jenkins Job?](#-what-is-a-jenkins-job)
+- [1. Freestyle Project](#1️⃣-freestyle-project)
+- [2. Maven Project](#2️⃣-maven-project)
+- [3. Pipeline Job](#3️⃣-pipeline-job)
+- [4. Multibranch Pipeline](#4️⃣-multibranch-pipeline)
+- [5. GitHub Organization Job](#5️⃣-github-organization-job)
+- [6. Folder Job](#6️⃣-folder-job)
+- [7. External Job](#7️⃣-external-job)
+- [8. Matrix / Multiconfiguration Job](#8️⃣-matrix--multiconfiguration-job)
+- [Summary Table](#-summary-table)
 
-### **Use Case**
+---
 
-* Simple builds
-* Running scripts (shell, batch)
-* Integrating with SCM (Git, SVN)
-* Triggering builds manually or via SCM/webhooks
+## 💡 What is a Jenkins Job?
 
-### **Steps to Create a Freestyle Job**
+A **Jenkins job** (also called a project) is a task or automated workflow that Jenkins executes. Jobs can build code, run tests, deploy applications, run scripts, or monitor external processes.
+
+Jenkins supports multiple job types — each designed for a specific automation scenario, from simple shell scripts to complex multi-branch, multi-environment CI/CD pipelines.
+
+---
+
+## 1️⃣ Freestyle Project
+
+The **Freestyle Project** is the most basic and flexible Jenkins job type. It offers a point-and-click UI for configuration with no code required.
+
+**Best for:** Simple builds, running scripts, basic SCM integration, one-off automation tasks.
+
+### How to Create
 
 1. Go to **Jenkins Dashboard → New Item**
-2. Enter a **Job name**
-3. Select **Freestyle project**
-4. Click **OK**
-5. Configure:
+2. Enter a job name → Select **Freestyle project** → Click **OK**
+3. Configure each tab:
 
-   * **General tab:** Description, discard old builds, restrict where the job runs
-   * **Source Code Management (SCM):** Git/ SVN repository, credentials, branches
-   * **Build Triggers:** Poll SCM, GitHub webhook, schedule (CRON)
-   * **Build Environment:** Clean workspace before build, environment variables
-   * **Build Steps:** Add build steps like:
+| Tab | What to Configure |
+|-----|------------------|
+| **General** | Description, discard old builds, restrict where job runs |
+| **Source Code Management** | Git/SVN repository URL, credentials, branch |
+| **Build Triggers** | Poll SCM, GitHub webhook, cron schedule |
+| **Build Environment** | Clean workspace, environment variables |
+| **Build Steps** | Execute shell / batch, invoke Maven/Ant/Gradle |
+| **Post-build Actions** | Archive artifacts, send email, trigger downstream jobs |
 
-     * Execute shell (Linux) / Execute Windows batch command
-     * Invoke Ant, Maven, Gradle
-   * **Post-build Actions:** Archive artifacts, email notifications, trigger other jobs
-6. Click **Save**
-7. Click **Build Now** to test
-
----
-
-# **2. Maven Project**
-
-Specifically for Java projects using **Maven** as the build tool.
-
-### **Use Case**
-
-* Java applications
-* Automatic dependency management
-* Integration with Maven goals (compile, test, package)
-
-### **Steps to Create a Maven Job**
-
-1. Install **Maven Integration Plugin** (if not already installed)
-2. **New Item → Enter Job name → Maven project → OK**
-3. Configure:
-
-   * **Source Code Management:** Git/SVN repo
-   * **Build Triggers:** Poll SCM, GitHub hook, timer
-   * **Build Settings:**
-
-     * Root POM path (pom.xml location)
-     * Goals (e.g., `clean install`)
-     * Options (skip tests, build options)
-   * **Post-build Actions:** Archive artifacts, run other jobs
-4. Save and run **Build Now**
-
----
-
-# **3. Pipeline Job**
-
-The **Pipeline** job uses **Jenkinsfile** (code-based configuration). It is the modern, preferred way for CI/CD.
-
-### **Use Case**
-
-* Complex workflows
-* Multi-stage CI/CD pipelines
-* Parallel builds
-* Version-controlled pipeline code
-
-### **Steps to Create a Pipeline Job**
-
-1. **New Item → Pipeline → OK**
-2. Configure:
-
-   * **General Tab:** Description, discard old builds
-   * **Build Triggers:** SCM webhook, cron schedule
-   * **Pipeline Definition:** Two main options:
-
-     * **Pipeline script:** Write Groovy code directly in Jenkins
-     * **Pipeline script from SCM:** Store Jenkinsfile in repository
-3. Sample **Declarative Pipeline Script**:
-
-   ```groovy
-   pipeline {
-       agent any
-       stages {
-           stage('Build') {
-               steps {
-                   echo 'Building...'
-                   sh 'mvn clean install'
-               }
-           }
-           stage('Test') {
-               steps {
-                   echo 'Running tests...'
-                   sh 'mvn test'
-               }
-           }
-           stage('Deploy') {
-               steps {
-                   echo 'Deploying...'
-               }
-           }
-       }
-   }
-   ```
 4. Click **Save → Build Now**
 
 ---
 
-# **4. Multibranch Pipeline**
+## 2️⃣ Maven Project
 
-Automates pipeline creation for **multiple branches** in a repository.
+The **Maven Project** is specifically designed for Java applications that use Apache Maven as the build tool. Jenkins understands the Maven lifecycle natively, making configuration simpler than freestyle.
 
-### **Use Case**
+**Best for:** Java applications, dependency management, Maven goals like `compile`, `test`, `package`.
 
-* Git repositories with feature branches
-* Automatically create pipelines per branch
-* Supports Pull Request builds
+### How to Create
 
-### **Steps to Create a Multibranch Pipeline**
-
-1. Install **Multibranch Pipeline Plugin**
-2. **New Item → Multibranch Pipeline → OK**
+1. Install the **Maven Integration Plugin** via *Manage Plugins* (if not already installed)
+2. Go to **New Item → Enter job name → Maven project → OK**
 3. Configure:
 
-   * **Branch Sources:** Git, GitHub, Bitbucket
-   * **Credentials:** Repo access
-   * **Discover branches and PRs:** Enable automatic detection
-   * **Build Configuration:** Specify `Jenkinsfile` path
-4. Jenkins automatically scans branches and creates individual jobs per branch
+| Field | Details |
+|-------|---------|
+| Source Code Management | Git/SVN repository, credentials, branch |
+| Build Triggers | Poll SCM, GitHub webhook, timer |
+| Root POM | Path to `pom.xml` (default: root of repo) |
+| Goals | e.g., `clean install`, `clean test`, `clean package` |
+| Post-build Actions | Archive artifacts, trigger downstream jobs |
+
+4. Click **Save → Build Now**
 
 ---
 
-# **5. GitHub Organization Job**
+## 3️⃣ Pipeline Job
 
-Automatically discovers all repositories in a GitHub organization.
+The **Pipeline Job** is the modern, preferred way to define CI/CD in Jenkins. Pipelines are written as code in a `Jenkinsfile` and stored alongside the application in version control.
 
-### **Use Case**
+**Best for:** Complex multi-stage CI/CD workflows, parallel builds, version-controlled pipeline definitions.
 
-* Large GitHub organizations
-* Auto-manage jobs for new repositories
-* Multibranch pipeline support
+### How to Create
 
-### **Steps to Create a GitHub Organization Job**
+1. Go to **New Item → Pipeline → OK**
+2. Configure:
+   - **General:** Description, discard old builds
+   - **Build Triggers:** SCM webhook, cron schedule
+   - **Pipeline Definition:** Choose one of:
+     - **Pipeline script** — write Groovy directly in Jenkins UI
+     - **Pipeline script from SCM** — load `Jenkinsfile` from your repository (recommended)
 
-1. **New Item → GitHub Organization → OK**
+3. Example **Declarative Pipeline:**
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                sh 'mvn clean install'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh 'mvn test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
+        }
+    }
+}
+```
+
+4. Click **Save → Build Now**
+
+> 💡 **Tip:** Always prefer **Pipeline script from SCM** so your pipeline definition lives in Git alongside your code — giving you version history, code reviews, and rollback capability.
+
+---
+
+## 4️⃣ Multibranch Pipeline
+
+The **Multibranch Pipeline** automatically discovers branches in a repository and creates a separate pipeline job for each branch that contains a `Jenkinsfile`. When a new branch is pushed, Jenkins automatically sets up the pipeline.
+
+**Best for:** Git workflows with feature branches, pull request builds, branch-specific pipelines.
+
+### How it Works
+
+```
+  GitHub Repository
+  ├── main          ──▶  Pipeline: my-app/main
+  ├── feature/login ──▶  Pipeline: my-app/feature-login
+  ├── feature/api   ──▶  Pipeline: my-app/feature-api
+  └── hotfix/bug-42 ──▶  Pipeline: my-app/hotfix-bug-42
+```
+
+### How to Create
+
+1. Install the **Multibranch Pipeline Plugin**
+2. Go to **New Item → Multibranch Pipeline → OK**
+3. Configure:
+
+| Field | Details |
+|-------|---------|
+| Branch Sources | Git, GitHub, or Bitbucket — provide repo URL and credentials |
+| Discover Branches | Enable automatic branch detection |
+| Discover PRs | Enable to build pull requests automatically |
+| Build Configuration | Set path to `Jenkinsfile` (default: root of repo) |
+| Scan Triggers | Set scan interval to detect new branches automatically |
+
+4. Click **Save** — Jenkins scans the repository and creates pipelines per branch automatically.
+
+---
+
+## 5️⃣ GitHub Organization Job
+
+The **GitHub Organization Job** scans an entire GitHub organization and automatically discovers all repositories. For any repository containing a `Jenkinsfile`, Jenkins creates and manages a multibranch pipeline automatically.
+
+**Best for:** Large GitHub organizations, managing dozens of repositories automatically, enforcing CI/CD across all projects.
+
+### How to Create
+
+1. Go to **New Item → GitHub Organization → OK**
 2. Configure:
 
-   * **Owner:** GitHub organization name
-   * **Credentials:** GitHub token
-   * **Repository discovery:** Filter by patterns (optional)
-   * **Build Configuration:** `Jenkinsfile` location
-3. Jenkins scans repositories and creates pipelines for each repository
+| Field | Details |
+|-------|---------|
+| Owner | GitHub organization name |
+| Credentials | GitHub personal access token with `repo` scope |
+| Repository Filter | Optionally filter repos by name pattern |
+| Build Configuration | Path to `Jenkinsfile` |
+| Scan Triggers | How frequently Jenkins re-scans for new repos |
+
+3. Click **Save** — Jenkins scans the org and creates pipelines for every repository that has a `Jenkinsfile`.
+
+> ℹ️ New repositories added to the org are picked up automatically on the next scan — no manual job creation needed.
 
 ---
 
-# **6. Folder Job**
+## 6️⃣ Folder Job
 
-Folders are **containers for organizing jobs**.
+**Folders** are containers used to organize related jobs. They support folder-level credentials, permissions, and views — making large Jenkins instances much easier to manage.
 
-### **Use Case**
+**Best for:** Organizing jobs by team, project, or environment. Applying scoped credentials and access control.
 
-* Organize multiple jobs
-* Apply folder-level credentials and permissions
-* Group related projects
+### How to Create
 
-### **Steps to Create a Folder**
+1. Go to **New Item → Folder → OK**
+2. Enter a folder name and description
+3. Create jobs inside the folder — they'll be scoped to it
+4. Configure folder-level credentials or permissions as needed
 
-1. **New Item → Folder → OK**
-2. Enter **Folder name**
-3. Add jobs inside folder
-4. Apply folder-specific credentials or permissions
+> 💡 **Tip:** Combine folders with role-based access control (RBAC) so each team only sees and manages their own jobs.
 
 ---
 
-# **7. External Job**
+## 7️⃣ External Job
 
-Monitors jobs executed **outside Jenkins**.
+The **External Job** type allows Jenkins to **monitor builds that run outside of Jenkins** — such as cron jobs, legacy scripts, or builds on external systems.
 
-### **Use Case**
+**Best for:** Legacy build processes, external cron jobs, scripts running on non-Jenkins infrastructure.
 
-* Legacy builds
-* Cron jobs
-* External scripts
+### How to Create
 
-### **Steps to Create an External Job**
+1. Go to **New Item → External Job → OK**
+2. Configure:
+   - Description
+   - Location or hostname of the external job
+   - Build triggers (poll external status)
+3. Jenkins monitors the execution and captures results for visibility in the dashboard.
 
-1. **New Item → External Job → OK**
+---
+
+## 8️⃣ Matrix / Multiconfiguration Job
+
+The **Matrix Project** (also called Multiconfiguration) runs the **same job across multiple environments or configurations simultaneously**. You define axes (e.g., OS, JDK version, Node label) and Jenkins generates all combinations, running them in parallel.
+
+**Best for:** Cross-platform testing, validating builds across multiple JDK/OS versions, matrix testing strategies.
+
+### Example Matrix
+
+| Axis | Values |
+|------|--------|
+| OS | `ubuntu`, `windows` |
+| JDK | `java11`, `java17` |
+
+Jenkins will run: `ubuntu × java11`, `ubuntu × java17`, `windows × java11`, `windows × java17` — **4 parallel builds automatically**.
+
+### How to Create
+
+1. Go to **New Item → Multiconfiguration project → OK**
 2. Configure:
 
-   * Description
-   * Location (hostname or path of external job)
-   * Build triggers (poll external status)
-3. Jenkins monitors execution and captures build results
+| Field | Details |
+|-------|---------|
+| Axes | Define variables — OS type, JDK version, Node label |
+| Build Steps | Steps are the same across all configurations |
+| Execution Strategy | Run combinations sequentially or in parallel |
+| Post-build Actions | Archive results, send notifications |
+
+3. Click **Save → Build Now** — Jenkins spawns parallel builds for each configuration combination.
 
 ---
 
-# **8. Matrix/Multiconfiguration Job**
+## 📊 Summary Table
 
-Runs the same job **across multiple environments** or configurations.
-
-### **Use Case**
-
-* Test across multiple OS/Java versions
-* Build for multiple platforms simultaneously
-
-### **Steps to Create a Matrix Job**
-
-1. **New Item → Multiconfiguration project → OK**
-2. Configure:
-
-   * **General → Name**
-   * **Axes:** Define variables (OS, JDK, Node labels)
-   * **Build Steps:** Same for all configurations
-   * **Post-build Actions**
-3. Jenkins automatically creates combinations and executes builds in parallel across agents
+| Job Type | Best For | Requires Plugin |
+|----------|----------|-----------------|
+| **Freestyle Project** | Simple builds, shell scripts, basic SCM integration | No |
+| **Maven Project** | Java projects with Maven build automation | Maven Integration Plugin |
+| **Pipeline** | Code-defined CI/CD, complex multi-stage workflows | Pipeline Plugin (built-in) |
+| **Multibranch Pipeline** | Auto-pipeline per branch, PR builds | Multibranch Pipeline Plugin |
+| **GitHub Organization** | Auto-manage all repos in a GitHub org | GitHub Branch Source Plugin |
+| **Folder** | Organizing and grouping related jobs | No |
+| **External Job** | Monitoring builds that run outside Jenkins | No |
+| **Matrix / Multiconfiguration** | Parallel builds across multiple OS/JDK environments | No |
 
 ---
 
-# **9. Summary Table of Jenkins Job Types**
+<div align="center">
 
-| Job Type                    | Use Case / Notes                                     |
-| --------------------------- | ---------------------------------------------------- |
-| Freestyle Project           | Simple builds, scripts, basic SCM integration        |
-| Maven Project               | Java projects with Maven build automation            |
-| Pipeline                    | Code-defined CI/CD, complex workflows                |
-| Multibranch Pipeline        | Automatic branch detection & pipeline per branch     |
-| GitHub Organization         | Auto-manage pipelines for all repositories in an org |
-| Folder                      | Organize multiple jobs                               |
-| External Job                | Monitor non-Jenkins jobs                             |
-| Matrix / Multiconfiguration | Parallel execution across multiple environments      |
+*Part of the [Jenkins Zero to Hero](../README.md) course*
 
----
+</div>
