@@ -1,236 +1,268 @@
-# **Building in Jenkins Using Maven – Study Notes**
-
 <img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/maven.jpg" alt="Banner" />
 
 
-Maven is a popular **Java build automation tool**. Integrating Maven with Jenkins allows **automated compilation, testing, packaging, and deployment** in CI/CD pipelines.
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+![Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+
+# Building with Maven in Jenkins
+
+> **Pull from GitHub. Compile. Test. Package. Archive. All automated.**
+
+</div>
 
 ---
 
-# **1. Lab Objective**
+## 📋 Table of Contents
 
-Learners will configure a Jenkins Freestyle project that:
-
-* Pulls a Maven project from GitHub
-* Executes a Maven build (`clean package`)
-* Archives generated artifacts
-* Shows build output through Jenkins console
-
----
-
-# **2. Prerequisites**
-
-Before starting the Jenkins configuration:
-
-* Jenkins server is running
-* Java is installed on the Jenkins machine
-* Maven is installed or configured through Jenkins
-* Git is installed
-* A valid GitHub repository containing a Maven project
+- [Lab Objective](#-lab-objective)
+- [Prerequisites](#-prerequisites)
+- [Step 1 — Configure Maven in Jenkins](#step-1--configure-maven-in-jenkins)
+- [Step 2 — Create a Freestyle Project](#step-2--create-a-freestyle-project)
+- [Step 3 — Configure Source Code Management](#step-3--configure-source-code-management-scm)
+- [Step 4 — Add the Maven Build Step](#step-4--add-the-maven-build-step)
+- [Step 5 — Archive Build Artifacts](#step-5--archive-build-artifacts)
+- [Step 6 — Build and Validate](#step-6--build-and-validate)
+- [Troubleshooting](#-troubleshooting)
+- [Lab Summary](#-lab-summary)
 
 ---
 
-# **3. Configure Maven in Jenkins**
+## 🎯 Lab Objective
 
-### **Step 1: Open Global Tool Configuration**
+In this lab, you will configure a **Jenkins Freestyle project** that:
 
-1. From Jenkins Dashboard → **Manage Jenkins**
-2. Click **Global Tool Configuration**
+- Pulls a Maven project from a GitHub repository
+- Executes a Maven build using the `clean package` goal
+- Archives the generated JAR/WAR artifact
+- Displays full build output through the Jenkins console
 
-### **Step 2: Add Maven**
-
-1. Scroll to **Maven** section
-2. Click **Add Maven**
-3. Fill in:
-
-   * **Name:** `Maven-3.9`
-   * **Install automatically:** ✓ (checked)
-4. Save settings
-
-This makes Maven available inside Freestyle jobs.
+By the end, you will have a fully working automated Java build pipeline in Jenkins.
 
 ---
 
-# **4. Create a Freestyle Project**
+## ✅ Prerequisites
 
-### **Step 3: Start a New Job**
+Before starting, ensure the following are in place on your Jenkins machine:
 
-1. From Jenkins Dashboard → **New Item**
-2. Job Name:
+| Requirement | Details |
+|-------------|---------|
+| Jenkins | Running and accessible via browser |
+| Java | Installed on the Jenkins server (`java -version`) |
+| Git | Installed on the Jenkins server (`git --version`) |
+| Maven | Installed locally **or** configured via Jenkins Global Tool Configuration |
+| GitHub Repository | A valid Maven project with a `pom.xml` at the root |
 
-   ```
-   maven-build-job
-   ```
+---
+
+## Step 1 — Configure Maven in Jenkins
+
+Before Jenkins can run Maven builds, it needs to know where Maven is. You can have Jenkins install it automatically.
+
+1. From the Jenkins Dashboard, go to **Manage Jenkins → Global Tool Configuration**
+2. Scroll down to the **Maven** section
+3. Click **Add Maven** and fill in:
+
+| Field | Value |
+|-------|-------|
+| Name | `Maven-3.9` |
+| Install automatically | ✅ Checked |
+
+4. Click **Save**
+
+Maven is now available as a build tool for all jobs on this Jenkins instance.
+
+---
+
+## Step 2 — Create a Freestyle Project
+
+1. From the Jenkins Dashboard, click **New Item**
+2. Enter a job name — e.g., `maven-build-job`
 3. Select **Freestyle project**
 4. Click **OK**
 
 ---
 
-# **5. Configure Source Code Management (SCM)**
+## Step 3 — Configure Source Code Management (SCM)
 
-### **Step 4: Connect GitHub Repository**
+Inside the project configuration page, connect Jenkins to your GitHub repository:
 
-Inside the project configuration page:
-
-1. Go to **Source Code Management**
-
+1. Scroll to the **Source Code Management** section
 2. Select **Git**
+3. Enter your repository URL:
 
-3. Enter the repository URL:
+```
+https://github.com/<your-username>/<your-repository>.git
+```
 
-   Example:
+4. For **private repositories**, click **Add Credentials** and provide your GitHub username and personal access token
+5. Under **Branches to build**, set the branch:
 
-   ```
-   https://github.com/<username>/<repository>.git
-   ```
+```
+*/main
+```
 
-4. For private repos → Add credentials
+> 💡 Change `main` to `master` or your feature branch name if needed.
 
-5. Under **Branches to build**, set:
-
-   ```
-   */main
-   ```
-
-   (or the branch your project uses)
-
-This ensures Jenkins retrieves the project files during the build.
+Jenkins will now clone this repository every time the job runs.
 
 ---
 
-# **6. Add Maven Build Step**
+## Step 4 — Add the Maven Build Step
 
-### **Step 5: Add Build Instruction**
+Now tell Jenkins what to do with the code once it's pulled:
 
-1. Scroll to **Build** section
-2. Click **Add build step** → **Invoke top-level Maven targets**
+1. Scroll to the **Build** section
+2. Click **Add build step → Invoke top-level Maven targets**
+3. Configure:
 
-Configure:
+| Field | Value |
+|-------|-------|
+| Maven Version | `Maven-3.9` (the one configured in Step 1) |
+| Goals | `clean package` |
 
-* **Maven Version:**
-  Select `Maven-3.9` (the one added earlier)
+**What these Maven goals do:**
 
-* **Goals:**
-
-  ```
-  clean package
-  ```
-
-Explanation:
-
-* `clean` removes previous builds
-* `package` produces the JAR/WAR file
+- `clean` — removes any previously generated build files from the `target/` directory
+- `package` — compiles the source code, runs tests, and packages the output into a JAR or WAR file
 
 ---
 
-# **7. Archive Build Artifacts**
+## Step 5 — Archive Build Artifacts
 
-### **Step 6: Add Post-build Action**
+After a successful build, archive the output so it's accessible directly from the Jenkins job page:
 
 1. Scroll to **Post-build Actions**
-2. Click **Add post-build action**
-3. Select **Archive the artifacts**
-4. In the **Files to archive** field, enter:
+2. Click **Add post-build action → Archive the artifacts**
+3. In the **Files to archive** field, enter:
 
-   ```
-   target/*.jar
-   ```
+```
+target/*.jar
+```
 
-   or
+For WAR-based projects (e.g., Spring MVC web apps):
 
-   ```
-   target/*.war
-   ```
+```
+target/*.war
+```
 
-This allows Jenkins to store and display the artifact for download after every successful build.
+Jenkins will now store and display the artifact after every successful build, making it available for download.
 
 ---
 
-# **8. Build the Job**
+## Step 6 — Build and Validate
 
-### **Step 7: Save and Run**
+### Trigger the Build
 
 1. Click **Save**
 2. Click **Build Now**
 
-This triggers the first execution.
+Jenkins will queue the job and begin execution immediately.
 
 ---
 
-# **9. Validate Build Output**
+### Check the Console Output
 
-### **Step 8: Check Console Output**
-
-1. Click on the build number (e.g., **#1**)
+1. Click on the build number (e.g., **#1**) in the **Build History** panel
 2. Click **Console Output**
 
-Expected behavior:
+A successful build will show Maven downloading dependencies, compiling, testing, and packaging the app. The output should end with:
 
-* Jenkins pulls source code from GitHub
-* Maven downloads dependencies
-* Compilation happens
-* Packaging completes
-* Output ends with:
-
-  ```
-  BUILD SUCCESS
-  ```
-
-### **Step 9: Verify Artifacts**
-
-1. Open the same build page
-2. Scroll to **Artifacts** section
-3. You should see:
-
-   ```
-   your-app-1.0.0.jar
-   ```
-4. You may download it to verify locally.
+```
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  12.345 s
+[INFO] Finished at: 2026-03-01T10:00:00Z
+```
 
 ---
 
-# **10. Troubleshooting (Very Important for Teaching)**
+### Verify the Archived Artifact
 
-### **Issue 1: Git not installed**
+1. Navigate back to the build page (e.g., **Build #1**)
+2. Scroll to the **Artifacts** section
+3. You should see something like:
 
-Error:
+```
+your-app-1.0.0.jar
+```
 
+Click the file to download and verify it locally if needed.
+
+---
+
+## 🛠️ Troubleshooting
+
+### Git not found on the agent
+
+**Error:**
 ```
 git: command not found
 ```
 
-Fix:
-
+**Fix — Install Git on the Jenkins server:**
 ```bash
-sudo dnf install git
+# Amazon Linux / RHEL / CentOS
+sudo dnf install git -y
+
+# Ubuntu / Debian
+sudo apt install git -y
 ```
-
-### **Issue 2: Maven not found**
-
-Error:
-
-```
-No such Maven installation found
-```
-
-Fix:
-Reconfigure in *Global Tool Configuration*.
-
-### **Issue 3: Build fails because pom.xml missing**
-
-Fix:
-Ensure the GitHub project contains a valid Maven project structure.
 
 ---
 
-# **11. Lab Summary**
+### Maven installation not found
 
-In this lab, learners:
+**Error:**
+```
+No such Maven installation found: Maven-3.9
+```
 
-* Integrated Jenkins with GitHub
-* Configured Maven inside Jenkins
-* Created a Freestyle job
-* Ran Maven build (`clean package`)
-* Archived build outputs
-* Verified successful build execution
+**Fix:** Go back to **Manage Jenkins → Global Tool Configuration** and verify the Maven installation name matches exactly what is set in the job (`Maven-3.9`). Re-save both.
 
+---
+
+### Build fails — pom.xml not found
+
+**Error:**
+```
+[ERROR] The goal you specified requires a project to execute but there is no POM in this directory.
+```
+
+**Fix:** Ensure the GitHub repository contains a valid Maven project structure with `pom.xml` at the root:
+
+```
+your-repo/
+├── src/
+│   ├── main/java/
+│   └── test/java/
+└── pom.xml        ← Must be here
+```
+
+---
+
+### Build fails — compilation errors
+
+**Fix:** Check the **Console Output** for the specific Java compile error. Fix the source code in your repository and re-trigger the build. Jenkins will pull the latest code and retry.
+
+---
+
+## 📌 Lab Summary
+
+| Step | What Was Done |
+|------|---------------|
+| ⚙️ Configure Maven | Added Maven 3.9 via Global Tool Configuration |
+| 📁 Create Job | Created a Freestyle project called `maven-build-job` |
+| 🔗 Connect GitHub | Configured Git SCM with repo URL and branch |
+| 🏗️ Add Build Step | Added `clean package` Maven goal |
+| 📦 Archive Artifacts | Set `target/*.jar` as the archived artifact |
+| ▶️ Run & Verify | Triggered build, verified `BUILD SUCCESS` and artifact download |
+
+---
+
+<div align="center">
+
+*Part of the [Jenkins Zero to Hero](../README.md) course*
+
+</div>
