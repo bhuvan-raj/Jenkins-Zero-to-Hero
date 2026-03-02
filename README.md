@@ -50,10 +50,10 @@ By the end of this course, you'll be able to:
 | 02 | [Build-in-CI](./Build-in-CI/) | Running builds as part of a full CI workflow |
 | 03 | [Tests in CI](./Tests-in-CI/) | Integrating unit and integration tests in pipelines |
 | 04 | [Introduction to Jenkins Architecture](./Introduction%20to%20JENKINS-%20Architecture/) | How Jenkins works under the hood — master, agents, executors |
-| 05 | [Agents in Jenkins & Setup](./Agents%20in%20Jenkins%20%26%20Setup/) | Configuring Jenkins agents and distributed builds |
-| 06 | [Job Types in Jenkins](./Job%20types%20in%20Jenkins/) | Freestyle, Pipeline, Multi-branch and more |
-| 07 | [Jenkins Freestyle Project](./Freestyle-Project/) | Creating and configuring freestyle jobs |
-| 08 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
+| 05 | [Job Types in Jenkins](./Job%20types%20in%20Jenkins/) | Freestyle, Pipeline, Multi-branch and more |
+| 06 | [Jenkins Freestyle Project](./Freestyle-Project/) | Creating and configuring freestyle jobs |
+| 07 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
+| 08 | [Agents in Jenkins & Setup](./Agents%20in%20Jenkins%20%26%20Setup/) | Configuring Jenkins agents and distributed builds |
 
 ---
 
