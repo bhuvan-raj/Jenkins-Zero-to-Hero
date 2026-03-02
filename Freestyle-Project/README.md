@@ -175,10 +175,9 @@ echo "=============================="
 # Print environment info
 echo "Branch: $GIT_BRANCH"
 echo "Build Number: $BUILD_NUMBER"
-echo "Workspace: $WORKSPACE"
 
 # Run your build command
-mvn clean package -DskipTests
+echo "Building your code" 
 
 echo "Build complete."
 ```
@@ -188,72 +187,9 @@ echo "Build complete."
 ```bat
 echo Starting build...
 echo Branch: %GIT_BRANCH%
-mvn clean package -DskipTests
 echo Build complete.
 ```
 
-#### Option C — Invoke top-level Maven targets
-
-| Field | Value |
-|-------|-------|
-| Maven Version | Select the Maven installation configured in Global Tool Configuration |
-| Goals | `clean package` |
-| POM | `pom.xml` (or path to your POM file) |
-
-#### Option D — Invoke Gradle script
-
-| Field | Value |
-|-------|-------|
-| Use Gradle Wrapper | ✅ Recommended if `gradlew` is in the repo |
-| Tasks | `clean build` |
-
-> 💡 You can **chain multiple build steps** — Jenkins executes them in order. If any step fails, the build is marked as failed and subsequent steps are skipped.
-
----
-
-### Step 7 — Add Post-Build Actions
-
-Post-build actions run **after** all build steps complete — regardless of success or failure (unless configured otherwise).
-
-Click **Add post-build action** and choose:
-
-#### Archive Artifacts
-
-Store build output files so they're accessible from the Jenkins job page.
-
-| Field | Value |
-|-------|-------|
-| Files to archive | `target/*.jar` or `target/*.war` |
-| Only if build succeeds | ✅ Recommended |
-
-#### Publish JUnit Test Results
-
-If your build runs unit tests, publish the results for a visual report.
-
-| Field | Value |
-|-------|-------|
-| Test report XMLs | `target/surefire-reports/*.xml` |
-
-#### Email Notification
-
-Send build status notifications to your team.
-
-| Field | Value |
-|-------|-------|
-| Recipients | `team@yourcompany.com` |
-| Send email for every broken build | ✅ |
-| Send email when build is fixed | ✅ |
-
-#### Trigger Downstream Jobs
-
-Chain this job to another Jenkins job after completion.
-
-| Field | Value |
-|-------|-------|
-| Projects to build | Name of the next Jenkins job |
-| Trigger only if build is stable | ✅ Recommended |
-
----
 
 ### Step 8 — Save and Run
 
