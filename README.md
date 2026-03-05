@@ -52,9 +52,6 @@ By the end of this course, you'll be able to:
 | 04 | [Introduction to Jenkins Architecture](./Introduction%20to%20JENKINS-%20Architecture/) | How Jenkins works under the hood — master, agents, executors |
 | 05 | [Job Types in Jenkins](./Job%20types%20in%20Jenkins/) | Freestyle, Pipeline, Multi-branch and more |
 | 06 | [Jenkins Freestyle Project](./Freestyle-Project/) | Creating and configuring freestyle jobs |
-| 07 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
-| 08 | [Agents in Jenkins & Setup](./Agents%20in%20Jenkins%20%26%20Setup/) | Configuring Jenkins agents and distributed builds |
-
 ---
 
 > ### 🟠 Before continuing — Learn Apache Maven First!
@@ -67,9 +64,12 @@ By the end of this course, you'll be able to:
 
 ---
 
+
 | # | Topic | Description |
 |---|-------|-------------|
-| 09 | [Build using Maven](./Build%20using%20Maven/) | Compiling and packaging Java apps with Maven |
+| 07 | [Build using Maven](./Build%20using%20Maven/) | Compiling and packaging Java apps with Maven |
+| 08 | [Jenkins Pipeline](./Jenkins%20Pipeline/) | Writing declarative and scripted pipelines |
+| 09 | [Agents in Jenkins & Setup](./Agents%20in%20Jenkins%20%26%20Setup/) | Configuring Jenkins agents and distributed builds |
 | 10 | [Configuring Webhooks](./Configuring%20Webhooks/) | Auto-triggering Jenkins jobs via GitHub Webhooks |
 | 11 | [Build and Deploy using Maven - Pipeline](./Build%20and%20Deploy%20using%20maven-%20Pipeline/) | End-to-end Maven build and deploy pipeline |
 | 12 | [Build and Deploy to EC2](./Build%20and%20deploy%20to%20Ec2/) | Deploying your application directly to AWS EC2 |
