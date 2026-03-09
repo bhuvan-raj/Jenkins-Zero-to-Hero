@@ -1,4 +1,3 @@
-<img src="https://github.com/bhuvan-raj/Jenkins-Zero-to-Hero/blob/main/assets/jenkins.png" alt="Banner" />
 
 <div align="center">
 
