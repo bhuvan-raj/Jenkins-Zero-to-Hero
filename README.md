@@ -80,6 +80,7 @@ By the end of this course, you'll be able to:
 | 17 | [Email Integration](./Email%20Integretion/) | Sending build notifications via email |
 | 18 | [Multi-Branch Pipeline](./Multi-Branch%20Pipeline/) | Managing pipelines across multiple Git branches |
 | 19 | [Multi-Configuration Project](./Multi-Configuration-Project/) | Running builds across multiple environments/configurations |
+| 20 | [RBAC](./RBAC/) | Role Based Access Control in jenkins. overview and lab |
 
 ---
 
